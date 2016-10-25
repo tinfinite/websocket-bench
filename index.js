@@ -14,6 +14,7 @@ program
   .option('-w, --worker <n>', 'number of worker', parseInt)
   .option('-g, --generator <file>', 'js file for generate message or special event')
   .option('-m, --message <n>', 'number of message for a client. Default to 0', parseInt)
+  .option('-q, --query <type>', 'request query default user_id=&token=')
   .option('-o, --output <output>', 'Output file')
   .option('-t, --type <type>', 'type of websocket server to bench(socket.io, engine.io, faye, primus, wamp). Default to io')
   .option('-p, --transport <type>', 'type of transport to websocket(engine.io, websockets, browserchannel, sockjs, socket.io). Default to websockets')
@@ -34,6 +35,9 @@ if (!program.worker) {
 
 if (!program.verbose) {
   program.verbose = false;
+}
+if (!program.query) {
+  program.query = 'user_id=&token=';
 }
 
 if (!program.amount) {
@@ -73,8 +77,9 @@ var options = {
   generatorFile : program.generator,
   type          : program.type,
   transport     : program.transport,
-  keepAlive     : program.keepAlive,
-  verbose       : program.verbose
+  keepAlive     : false,
+  verbose       : program.verbose,
+  query         : program.query
 };
 
 if (program.verbose) {
@@ -108,4 +113,3 @@ process.on('SIGINT', function () {
 });
 
 bench.launch(program.amount, program.concurency, program.worker, program.message, program.keepAlive);
-
