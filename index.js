@@ -77,7 +77,7 @@ var options = {
   generatorFile : program.generator,
   type          : program.type,
   transport     : program.transport,
-  keepAlive     : false,
+  keepAlive     : program.keepAlive,
   verbose       : program.verbose,
   query         : program.query
 };
