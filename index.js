@@ -15,6 +15,7 @@ program
   .option('-g, --generator <file>', 'js file for generate message or special event')
   .option('-m, --message <n>', 'number of message for a client. Default to 0', parseInt)
   .option('-q, --query <type>', 'request query default user_id=&token=')
+  .option('-P, --path <type>', 'socket path default /sokcet.io')
   .option('-o, --output <output>', 'Output file')
   .option('-t, --type <type>', 'type of websocket server to bench(socket.io, engine.io, faye, primus, wamp). Default to io')
   .option('-p, --transport <type>', 'type of transport to websocket(engine.io, websockets, browserchannel, sockjs, socket.io). Default to websockets')
@@ -31,6 +32,10 @@ var server = program.args[0];
 // Set default value
 if (!program.worker) {
   program.worker = 1;
+}
+
+if (!program.path) {
+  program.path = '/sokcet.io';
 }
 
 if (!program.verbose) {
@@ -79,7 +84,8 @@ var options = {
   transport     : program.transport,
   keepAlive     : program.keepAlive,
   verbose       : program.verbose,
-  query         : program.query
+  query         : program.query,
+  path          : program.path
 };
 
 if (program.verbose) {
