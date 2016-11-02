@@ -4,7 +4,11 @@ var Benchmark = require('./lib/benchmark.js'),
   DefaultReporter = require('./lib/defaultreporter.js'),
   fs = require('fs'),
   program = require('commander'),
-  logger = require('./lib/logger');
+  logger = require('./lib/logger'),
+  loadData = require('./util/loadData'),
+  path = require('path');
+
+console.log(loadData);
 
 program
   .version('0.0.3')
@@ -13,6 +17,7 @@ program
   .option('-c, --concurency <n>', 'Concurent connection per second, Default to 20', parseInt)
   .option('-w, --worker <n>', 'number of worker', parseInt)
   .option('-g, --generator <file>', 'js file for generate message or special event')
+  .option('-J, --JsonData <file>', 'json file for init test data')
   .option('-m, --message <n>', 'number of message for a client. Default to 0', parseInt)
   .option('-q, --query <type>', 'request query default user_id=&token=')
   .option('-P, --path <type>', 'socket path default /sokcet.io')
@@ -26,6 +31,11 @@ program
 if (program.args.length < 1) {
   program.help();
 }
+
+if (!program.JsonData) {
+  program.JsonData = path.join(__dirname, './loadData.json');
+}
+loadData(program.JsonData);
 
 var server = program.args[0];
 
