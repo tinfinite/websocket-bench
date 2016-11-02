@@ -43,6 +43,7 @@ command help
       -c, --concurency <n>     Concurent connection per second, Default to 20
       -w, --worker <n>         Number of worker(s)
       -g, --generator <file>   Js file for generate message or special event
+      -J, --JsonData <file>   json file for init test data
       -m, --message <n>        Number of message for a client. Default to 0
       -o, --output <output>    Output file
       -t, --type <type>        Type of websocket server to bench(socket.io, engine.io, faye, primus, wamp). Default to socket.io
@@ -102,17 +103,14 @@ generator structure :
          // client.publish('/test', { hello: 'world' });
          // client.call('com.myapp.add2', [2, 3]).then(function (res) { });
          done();
-       },
-
-       /**
-        * WAMP connection options
-        */
-       options : {
-         // realm: 'chat'
        }
     };
 
 ```
+
+## example
+
+websocket-bench -a 1 -c 1 http://127.0.0.1:9090 -v -P /live/socket.io -m 1
 
 ## See also
 
