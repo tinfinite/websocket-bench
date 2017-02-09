@@ -11,8 +11,6 @@ module.exports = function (filePath) {
     rl.on('line', (line) => {
       line = JSON.parse(line);
       result.push({
-        user_id: line.userId.$oid,
-        live_show_id: line.liveshowId.$oid,
         token: line.token
       });
     })
