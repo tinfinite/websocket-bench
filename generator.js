@@ -10,7 +10,7 @@ module.exports = {
    * Before connection (just for faye)
    * @param {client} client connection
    */
-  beforeConnect: function (client) {
+  beforeConnect : function (client) {
     // Your logic
     // By example
     // client.setHeader('Authorization', 'OAuth abcd-1234');
@@ -23,6 +23,13 @@ module.exports = {
    * @param {done}   callback function(err) {}
    */
   onConnect: function (client, done) {
+    // Your logic
+    // client.subscribe('/test', function() {});
+    client.on('GETSYSTEMMESSAGE', function(data) {
+    });
+    client.on('PULLMESSAGE', function(data) {
+      // console.log('push data', data);
+    })
     done()
   },
 
@@ -31,11 +38,10 @@ module.exports = {
    * @param {client} client connection
    * @param {done}   callback function(err) {}
    */
-  sendMessage: function (client, done) {
-    client.emit('ACKPULLMESSAGE', { limit: 70, start: 0}, function(err, data) {
-      //console.log(err, data);
+  sendMessage : function (client, done) {
+    // util_sleep.sleep(10);
+    client.emit('ping', { msg: 'test' }, function(data) {
     });
     done();
   }
-}
-;
+};
