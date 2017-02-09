@@ -6,7 +6,8 @@ var Benchmark = require('./lib/benchmark.js'),
   program = require('commander'),
   logger = require('./lib/logger'),
   loadData = require('./util/loadData'),
-  path = require('path');
+  path = require('path'),
+  fs = require('fs');
 
 program
   .version('0.0.3')
@@ -26,103 +27,114 @@ program
   .option('-v, --verbose', 'Verbose Logging')
   .parse(process.argv);
 
-if (program.args.length < 1) {
-  program.help();
+var queryPath = path.join(__dirname, './query.js');
+function main() {
+  fs.existsSync(queryPath) && fs.unlinkSync(queryPath);
+  if (!program.JsonData) return init();
+  return loadData(program.JsonData).then((r) => init(r));
 }
 
-if (program.JsonData) {
-  loadData(program.JsonData);
-}
-
-var server = program.args[0];
-
-// Set default value
-if (!program.worker) {
-  program.worker = 1;
-}
-
-if (!program.path) {
-  program.path = '/sokcet.io';
-}
-
-if (!program.verbose) {
-  program.verbose = false;
-}
-if (!program.query) {
-  program.query = 'user_id=&token=';
-}
-
-if (!program.amount) {
-  program.amount = 100;
-}
-
-if (!program.concurency) {
-  program.concurency = 20;
-}
-
-if (!program.generator) {
-  program.generator = __dirname + '/lib/generator.js';
-}
-
-if (program.generator.indexOf('/') !== 0) {
-  program.generator = process.cwd() + '/' + program.generator;
-}
-
-if (!program.message) {
-  program.message = 0;
-}
-
-if (!program.type) {
-  program.type = 'socket.io';
-}
-
-if (program.type === 'primus' && !program.transport) {
-  program.transPort = 'websockets';
-}
-
-logger.info('Launch bench with ' + program.amount + ' total connection, ' + program.concurency + ' concurent connection');
-logger.info(program.message + ' message(s) send by client');
-logger.info(program.worker + ' worker(s)');
-logger.info('WS server : ' + program.type);
-
-var options = {
-  generatorFile : program.generator,
-  type          : program.type,
-  transport     : program.transport,
-  keepAlive     : program.keepAlive,
-  verbose       : program.verbose,
-  query         : program.query,
-  path          : program.path
-};
-
-if (program.verbose) {
-  logger.debug("Benchmark Options " + JSON.stringify(options));
-}
-
-var outputStream = null;
-
-if (program.output) {
-  if (program.generator.indexOf('/') !== 0) {
-    program.output = __dirname + '/' + program.generator;
+function init(replace_query) {
+  if (program.args.length < 1) {
+    program.help();
   }
-  outputStream = fs.createWriteStream(program.output);
-}
+  var server = program.args[0];
 
-var reporter = new DefaultReporter(outputStream);
-var bench = new Benchmark(server, reporter, options);
+  // Set default value
+  if (!program.worker) {
+    program.worker = 1;
+  }
 
-// On ctrl+c
-process.on('SIGINT', function () {
-  logger.info("\nGracefully stoping worker from SIGINT (Ctrl+C)");
+  if (!program.path) {
+    program.path = '/sokcet.io';
+  }
 
-  setTimeout(function () {
+  if (!program.verbose) {
+    program.verbose = false;
+  }
+  if (!program.query) {
+    program.query = 'user_id=&token=';
+  }
 
-    if (bench.monitor.isRunning()) {
-      bench.terminate();
+  if (!program.amount) {
+    program.amount = 100;
+  }
+
+  if (!program.concurency) {
+    program.concurency = 20;
+  }
+
+  if (!program.generator) {
+    program.generator = __dirname + '/lib/generator.js';
+  }
+
+  if (program.generator.indexOf('/') !== 0) {
+    program.generator = process.cwd() + '/' + program.generator;
+  }
+
+  if (!program.message) {
+    program.message = 0;
+  }
+
+  if (!program.type) {
+    program.type = 'socket.io';
+  }
+
+  if (program.type === 'primus' && !program.transport) {
+    program.transPort = 'websockets';
+  }
+
+  logger.info('Launch bench with ' + program.amount + ' total connection, ' + program.concurency + ' concurent connection');
+  logger.info(program.message + ' message(s) send by client');
+  logger.info(program.worker + ' worker(s)');
+  logger.info('WS server : ' + program.type);
+  if (replace_query) {
+    var query = require(queryPath);
+    var length = query.length;
+    var params = query[Math.ceil(Math.random() * Number(length - 1))];
+    program.query = `token=${params.token}`;
+  }
+
+  var options = {
+    generatorFile : program.generator,
+    type          : program.type,
+    transport     : program.transport,
+    keepAlive     : program.keepAlive,
+    verbose       : program.verbose,
+    query         : program.query,
+    path          : program.path
+  };
+
+  if (program.verbose) {
+    logger.debug("Benchmark Options " + JSON.stringify(options));
+  }
+
+  var outputStream = null;
+
+  if (program.output) {
+    if (program.generator.indexOf('/') !== 0) {
+      program.output = __dirname + '/' + program.generator;
     }
+    outputStream = fs.createWriteStream(program.output);
+  }
 
-  }, 2000);
+  var reporter = new DefaultReporter(outputStream);
+  var bench = new Benchmark(server, reporter, options);
 
-});
+  // On ctrl+c
+  process.on('SIGINT', function () {
+    logger.info("\nGracefully stoping worker from SIGINT (Ctrl+C)");
 
-bench.launch(program.amount, program.concurency, program.worker, program.message, program.keepAlive);
+    setTimeout(function () {
+
+      if (bench.monitor.isRunning()) {
+        bench.terminate();
+      }
+
+    }, 2000);
+
+  });
+
+  bench.launch(program.amount, program.concurency, program.worker, program.message, program.keepAlive);
+}
+main();
