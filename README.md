@@ -39,17 +39,19 @@ command help
 
       -h, --help               Output usage information
       -V, --version            Output the version number
-      -a, --amount <n>         Total number of persistent connection, Default to 100
-      -c, --concurency <n>     Concurent connection per second, Default to 20
-      -w, --worker <n>         Number of worker(s)
-      -g, --generator <file>   Js file for generate message or special event
-      -J, --JsonData <file>   json file for init test data
-      -m, --message <n>        Number of message for a client. Default to 0
-      -o, --output <output>    Output file
-      -t, --type <type>        Type of websocket server to bench(socket.io, engine.io, faye, primus, wamp). Default to socket.io
-      -p, --transport <type>   Type of transport to websocket(engine.io, websockets, browserchannel, sockjs, socket.io). Default to websockets (Just for Primus)
-      -k, --keep-alive         Keep alive connection
-      -v, --verbose            Verbose Logging
+      -a, --amount             Total number of persistent connection, Default to 100', parseInt)
+      -c, --concurency         Concurent connection per second, Default to 20', parseInt)
+      -w, --worker             number of worker', parseInt)
+      -g, --generator          js file for generate message or special event)
+      -J, --JsonData           Optional json file for init test data)
+      -m, --message            number of message for a client. Default to 0', parseInt)
+      -q, --query              request query default user_id=&token=)
+      -P, --path               socket path default /sokcet.io)
+      -o, --output             Output file)
+      -t, --type               type of websocket server to bench(socket.io, engine.io, faye, primus, wamp). Default to io)
+      -p, --transport          type of transport to websocket(engine.io, websockets, browserchannel, sockjs, socket.io). Default to websockets)
+      -k, --keep-alive         Keep alive connection)
+      -v, --verbose            Verbose Logging)
 
 
 ## Benchmark message
